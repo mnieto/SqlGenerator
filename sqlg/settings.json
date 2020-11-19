@@ -1,0 +1,12 @@
+{
+  "Serilog": {
+    "MinimumLevel": "Debug",
+    "Override": {
+      "Microsoft": "Warning",
+      "System": "Warning"
+    },
+    "WriteTo": [
+      { "Name": "Console" }
+    ]
+  }
+}

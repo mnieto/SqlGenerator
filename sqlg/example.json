@@ -1,0 +1,6 @@
+{
+  "Specification": {
+    "TableName": "Users",
+    "ConnectionString": "(localdb)"
+  }
+}
