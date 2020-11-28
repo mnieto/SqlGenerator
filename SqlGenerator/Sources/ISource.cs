@@ -8,7 +8,7 @@ namespace SqlGenerator.Sources
 {
     public interface ISource
     {
-        string TableName { get => TableDef.TableName; }
+        string TableName { get; }
 
         TableDef TableDef { get; }
         void Load(string fileName);

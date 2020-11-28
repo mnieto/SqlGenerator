@@ -4,5 +4,142 @@
         <name>SqlGenerator</name>
     </assembly>
     <members>
+        <member name="F:SqlGenerator.Discover.FieldDefParserStrategy.dataTypes">
+            <summary>
+            Translate char from <see cref="F:SqlGenerator.Discover.FieldDefParserStrategy.patternFieldType"/> to <see cref="T:SqlGenerator.FieldType"/>
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Discover.FieldDefParserStrategy.CurrentToken">
+            <summary>Which token are we parsing now</summary>
+        </member>
+        <member name="P:SqlGenerator.Discover.FieldDefParserStrategy.Descriptor">
+            <summary>Descriptor Which we are parsing now</summary>
+        </member>
+        <member name="P:SqlGenerator.Discover.FieldDefParserStrategy.result">
+            <summary>Current parse result</summary>
+        </member>
+        <member name="T:SqlGenerator.Discover.ParseResult">
+            <summary>
+            Result of parsing a FieldDef descriptor
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Discover.ParseResult.Field">
+            <summary>
+            If no errors, Gets an nitialized and valid <see cref="T:SqlGenerator.FieldDef"/>. If there is any error, this field is <c>null</c>
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Discover.ParseResult.Success">
+            <summary>
+            <c>true</c> if no parsing errors
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Discover.ParseResult.ErrorMessage">
+            <summary>
+            Readable error list as multiline string
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Discover.ParseResult.Errors">
+            <summary>
+            Parse errors found. If <see cref="P:SqlGenerator.Discover.ParseResult.Success"/> this collection is empty
+            </summary>
+        </member>
+        <member name="T:SqlGenerator.FieldDef">
+            <summary>
+            Field definition metadata
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.FieldDef.Name">
+            <summary>
+            Field name
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.FieldDef.MaxLength">
+            <summary>
+            MaxLenght. If type is other <see cref="F:SqlGenerator.FieldType.Text"/> this property is ignored
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.FieldDef.IsNullable">
+            <summary>
+            Field is nullable. Default <c>true</c>
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.FieldDef.IsKey">
+            <summary>
+            Field is part of the primary key
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.FieldDef.FieldType">
+            <summary>
+            Field data type. See types: <see cref="P:SqlGenerator.FieldDef.FieldType"/>
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.FieldDef.Format">
+            <summary>
+            Format for <see cref="F:SqlGenerator.FieldType.Bool"/> and <see cref="F:SqlGenerator.FieldType.DateTime"/>. Ignored for other data types
+            </summary>
+        </member>
+        <member name="F:SqlGenerator.FieldType.Auto">
+            <summary>
+            Field type not set. Will try to guess for each read value.
+            </summary>
+            <remarks>
+            When <see cref="!:DiscoverStrategy"/> is <see cref="!:DiscoverStrategy.GuestDataType"/> and all scaned rows are <c>null</c>, FieldType remains Auto
+            </remarks>
+        </member>
+        <member name="F:SqlGenerator.FieldType.Text">
+            <summary>
+            If field has text or other field types have failed.
+            </summary>
+        </member>
+        <member name="F:SqlGenerator.FieldType.Numeric">
+            <summary>
+            Field has only numeric values. Can be integer, float.... For text sources, decimal separator is the system default
+            </summary>
+        </member>
+        <member name="F:SqlGenerator.FieldType.DateTime">
+            <summary>
+            Field seems to have date or date time values.
+            </summary>
+            <remarks>
+            Do not support formats with month names. Date separator can be [/], [-] or [.] Hour separator is [:]
+            Detect formats like yyyy-mm-dd, mm-dd-yyyy, dd-mm-yyyy. With year in 2 or 4 digits, and day and month with 1 or 2 digits
+            Hour part can be hh:mm with 1 or 2 digits. Any trailing chars will be considered seconds part, which allow milliseconds
+            12 hours format with am/pm not allowed. Please use allways 24 hours format
+            </remarks>
+        </member>
+        <member name="F:SqlGenerator.FieldType.Bool">
+            <summary>
+            Field is considered boolean as it has only 1 or 2 values (apart of null)
+            </summary>
+            <remarks>
+            The <see cref="P:SqlGenerator.FieldDef.Format"/> field will contain the text values for true/false, separated with [/]
+            If <see cref="P:SqlGenerator.FieldDef.Format"/> is not specified, allowed pairs are: true/false, yes/no, y/n, 1/0, -1/0, x/&lt;space&gt;
+            </remarks>
+        </member>
+        <member name="P:SqlGenerator.Specification.RowsToScan">
+            <summary>
+            Number of rows to scan to try to guess the fields data type
+            </summary>
+            <remarks>
+            Depending on the value of <see cref="P:SqlGenerator.Specification.DiscoverStrategy"/>
+            <list type="bullet">
+            <item><term><see cref="F:SqlGenerator.Discover.DiscoverStrategy.GuestDataType"/></term>
+            <description>This field is mandatory/></description>
+            </item>
+            <item><term><see cref="F:SqlGenerator.Discover.DiscoverStrategy.FieldNamesOnly"/></term>
+            <description>
+            If this field has no value or it is 0, <see cref="T:SqlGenerator.FieldType"/> will be <see cref="F:SqlGenerator.FieldType.Auto"/> 
+            and data type will be guessed in each occurrence. If has a value greather than 0, field data types will be
+            guessed scaning up to the specified row
+            </description>
+            </item>
+            </list>
+            </remarks>
+        </member>
+        <member name="P:SqlGenerator.Specification.WorkSheetName">
+            <summary>
+            For Excel files, thw worksheet that contains the source data. If not specified, the first worksheet (by index) is taken
+            </summary>
+        </member>
     </members>
 </doc>
