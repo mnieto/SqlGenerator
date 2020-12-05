@@ -8,10 +8,25 @@ using System.Threading.Tasks;
 
 namespace SqlGenerator
 {
+    /// <summary>
+    /// Indications to load data and generate the SQL scripts
+    /// </summary>
     public class Specification {
+
+        /// <summary>
+        /// Table name used to generate the SQL scripts. If ommited, can be infered by the <see cref="IFieldDefStrategy"/>
+        /// </summary>
         public string TableName { get; set; }
+
+        /// <summary>
+        /// Connection string to get the table scheme from. This property is mandatory if <see cref="DiscoverStrategy.ConnectToDatabase"/> strategy is used
+        /// </summary>
         public string ConnectionString { get; set; }
 
+
+        /// <summary>
+        /// Which stratgy will follow to guess field names and data types. Default <see cref="DiscoverStrategy.FieldDefDescriptor"/>
+        /// </summary>
         public DiscoverStrategy DiscoverStrategy { get; set; } = DiscoverStrategy.FieldDefDescriptor;
 
         /// <summary>

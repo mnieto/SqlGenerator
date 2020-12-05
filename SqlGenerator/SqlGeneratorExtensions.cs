@@ -11,8 +11,14 @@ using System.Threading.Tasks;
 [assembly: InternalsVisibleTo("SqlGenerator.Test")]
 namespace SqlGenerator
 {
+    /// <summary>
+    /// Dependency injection extensions for SqlGenerator
+    /// </summary>
     public static class SqlGeneratorExtensions
     {
+        /// <summary>
+        /// Register the neccesary DI in the services colection
+        /// </summary>
         public static void AddSqlGenerator(this IServiceCollection services) {
             services.AddTransient<SourceFactory>();
             services.AddTransient<ISource, ExcelSource>(s => s.GetService<ExcelSource>());

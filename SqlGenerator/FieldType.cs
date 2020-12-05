@@ -1,7 +1,11 @@
-﻿using SqlGenerator.Sources;
+﻿using SqlGenerator.Discover;
+using SqlGenerator.Sources;
 
 namespace SqlGenerator
 {
+    /// <summary>
+    /// Enum the different data types distinguised by the sql generator
+    /// </summary>
     public enum FieldType
     {
         /// <summary>
