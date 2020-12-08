@@ -57,5 +57,15 @@ namespace SqlGenerator.Sources
             return buffer;
         }
 
+        protected override (string[] data, bool more) ReadRow(int rowNumber) {
+            string[] data = new string[TableDef.Fields.Count];
+            if (rowNumber > _ws.Cells.End.Row) {
+                return (data, false);
+            }
+            int cols = TableDef.Fields.Count;
+            data = _ws.Cells[rowNumber, 1, rowNumber, cols].Select(x => x.Value?.ToString()).ToArray();
+            return (data, true);
+        }
+
     }
 }

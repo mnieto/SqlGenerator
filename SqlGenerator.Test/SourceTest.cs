@@ -55,6 +55,50 @@ namespace SqlGenerator.Test
             Assert.Collection(sut.TableDef.Keys, x => Assert.Equal("Id", x));
         }
 
+        [Fact]
+        public void must_be_loaded_before_read_data() {
+            var settings = Options.Create(new Specification {
+                DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor,
+                TableName = "MyTable"
+            });
+            var sut = new TestSource(settings, NullLogger<SourceTest>.Instance, new FieldDefParserStrategy(), SampleData.FieldDescriptorData());
+            Assert.Throws<InvalidOperationException>(() => sut.Read());
+        }
+
+        [Fact]
+        public void must_be_readed_before_get_data() {
+            var settings = Options.Create(new Specification {
+                DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor,
+                TableName = "MyTable"
+            });
+            var sut = new TestSource(settings, NullLogger<SourceTest>.Instance, new FieldDefParserStrategy(), SampleData.FieldDescriptorData());
+            sut.Load("imput filename");
+            Assert.Throws<InvalidOperationException>(() => sut[0]);
+        }
+
+
+        [Fact]
+        public void can_read_data() {
+            var settings = Options.Create(new Specification {
+                DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor,
+                TableName = "MyTable"
+            });
+            var sut = new TestSource(settings, NullLogger<SourceTest>.Instance, new FieldDefParserStrategy(), SampleData.ReadData());
+            sut.Load("imput filename");
+            bool more = sut.Read();
+            Assert.True(more);
+            Assert.Equal(1, sut.AsNumber(0));
+            Assert.True(sut.AsBoolean(2));
+            Assert.Null(sut.AsString(3));
+            Assert.Equal(new DateTime(1970, 2, 24), sut.AsDateTime(4));
+
+            more = sut.Read();
+            Assert.True(more);
+
+            more = sut.Read();
+            Assert.False(more);
+
+        }
     }
 
 
@@ -85,6 +129,16 @@ namespace SqlGenerator.Test
 
         protected override List<string[]> ReadBufferRows(int numRows) {
             return sampleData.Data;
+        }
+
+        protected override (string[] data, bool more) ReadRow(int rowNumber) {
+            string[] data = new string[TableDef.Fields.Count];
+            if (rowNumber >= sampleData.Data.Count) {
+                return (data, false);
+            }
+            int cols = TableDef.Fields.Count;
+            data = sampleData.Data[rowNumber];
+            return (data, true);
         }
     }
 }

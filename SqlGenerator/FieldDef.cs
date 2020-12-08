@@ -9,12 +9,17 @@ namespace SqlGenerator
     /// <summary>
     /// Field definition metadata
     /// </summary>
-    public partial class FieldDef
+    public class FieldDef
     {
         /// <summary>
         /// Field name
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Number of column where the field is defined
+        /// </summary>
+        public int OrdinalPosition { get; set; }
 
         /// <summary>
         /// MaxLenght. If type is other <see cref="FieldType.Text"/> this property is ignored

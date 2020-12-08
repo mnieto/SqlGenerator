@@ -4,6 +4,45 @@
         <name>SqlGenerator</name>
     </assembly>
     <members>
+        <member name="T:SqlGenerator.Discover.DiscoverStrategy">
+            <summary>
+            Which strategy will follow the application to guess field name, data types and other field properties. Default <see cref="F:SqlGenerator.Discover.DiscoverStrategy.FieldDefDescriptor"/>
+            </summary>
+        </member>
+        <member name="F:SqlGenerator.Discover.DiscoverStrategy.Auto">
+            <summary>
+            Try to do the best to guess the information
+            </summary>
+            <remarks>
+            If there is a connections string it will use it to get the scheme information.
+            If there is not a connection string, try to parse field names as field descriptors. If it encounter errors,
+            then it try the get only field names and guess data types
+            </remarks>
+        </member>
+        <member name="F:SqlGenerator.Discover.DiscoverStrategy.ConnectToDatabase">
+            <summary>
+            Uses then <see cref="P:SqlGenerator.Specification.ConnectionString"/> and retrieves the table schema
+            </summary>
+            <remarks>
+            If <see cref="P:SqlGenerator.Specification.ConnectionString"/> is empty an exception is thrown in the <see cref="M:SqlGenerator.Sources.ISource.Load(System.String)"/> method call
+            </remarks>
+        </member>
+        <member name="F:SqlGenerator.Discover.DiscoverStrategy.FieldDefDescriptor">
+            <summary>
+            Fields have a specific descriptor that allow to infer the neccesary information about field name, data type and properties.
+            </summary>
+            <seealso cref="T:SqlGenerator.Discover.FieldDefParserStrategy"/>
+        </member>
+        <member name="F:SqlGenerator.Discover.DiscoverStrategy.FieldNamesOnly">
+            <summary>
+            Retrieves only field names. Data type is guessed for each data row and column
+            </summary>
+        </member>
+        <member name="F:SqlGenerator.Discover.DiscoverStrategy.GuestDataType">
+            <summary>
+            Get a sample of data of max <see cref="P:SqlGenerator.Specification.RowsToScan"/> rows and, for each column try to guess the data type and other properties
+            </summary>
+        </member>
         <member name="F:SqlGenerator.Discover.FieldDefParserStrategy.dataTypes">
             <summary>
             Translate char from <see cref="F:SqlGenerator.Discover.FieldDefParserStrategy.patternFieldType"/> to <see cref="T:SqlGenerator.FieldType"/>
@@ -53,6 +92,11 @@
             Field name
             </summary>
         </member>
+        <member name="P:SqlGenerator.FieldDef.OrdinalPosition">
+            <summary>
+            Number of column where the field is defined
+            </summary>
+        </member>
         <member name="P:SqlGenerator.FieldDef.MaxLength">
             <summary>
             MaxLenght. If type is other <see cref="F:SqlGenerator.FieldType.Text"/> this property is ignored
@@ -78,12 +122,17 @@
             Format for <see cref="F:SqlGenerator.FieldType.Bool"/> and <see cref="F:SqlGenerator.FieldType.DateTime"/>. Ignored for other data types
             </summary>
         </member>
+        <member name="T:SqlGenerator.FieldType">
+            <summary>
+            Enum the different data types distinguised by the sql generator
+            </summary>
+        </member>
         <member name="F:SqlGenerator.FieldType.Auto">
             <summary>
             Field type not set. Will try to guess for each read value.
             </summary>
             <remarks>
-            When <see cref="!:DiscoverStrategy"/> is <see cref="!:DiscoverStrategy.GuestDataType"/> and all scaned rows are <c>null</c>, FieldType remains Auto
+            When <see cref="T:SqlGenerator.Discover.DiscoverStrategy"/> is <see cref="F:SqlGenerator.Discover.DiscoverStrategy.GuestDataType"/> and all scaned rows are <c>null</c>, FieldType remains Auto
             </remarks>
         </member>
         <member name="F:SqlGenerator.FieldType.Text">
@@ -116,6 +165,66 @@
             If <see cref="P:SqlGenerator.FieldDef.Format"/> is not specified, allowed pairs are: true/false, yes/no, y/n, 1/0, -1/0, x/&lt;space&gt;
             </remarks>
         </member>
+        <member name="T:SqlGenerator.Sources.ISource">
+            <summary>
+            Iterface for all data sources
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Sources.ISource.TableName">
+            <summary>
+            Name of the table
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Sources.ISource.TableDef">
+            <summary>
+            Table schema (or definition). See <see cref="P:SqlGenerator.Sources.ISource.TableDef"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.ISource.Load(System.String)">
+            <summary>
+            Load the information from de source file
+            </summary>
+            <param name="fileName">File name with the data</param>
+        </member>
+        <member name="T:SqlGenerator.Sources.SourceFactory">
+            <summary>
+            Selects the class that will read the soruce data from the file extension
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.SourceFactory.#ctor(System.IServiceProvider,Microsoft.Extensions.Logging.ILogger{SqlGenerator.Sources.SourceFactory})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="serviceProvider">DI service provider</param>
+            <param name="logger">Logger</param>
+        </member>
+        <member name="M:SqlGenerator.Sources.SourceFactory.GetSource(System.String)">
+            <summary>
+            Get the specific <see cref="T:SqlGenerator.Sources.ISource"/> from the file extension
+            </summary>
+            <param name="extension">file extension</param>
+            <returns><see cref="T:SqlGenerator.Sources.ISource"/></returns>
+        </member>
+        <member name="T:SqlGenerator.Specification">
+            <summary>
+            Indications to load data and generate the SQL scripts
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Specification.TableName">
+            <summary>
+            Table name used to generate the SQL scripts. If ommited, can be infered by the <see cref="T:SqlGenerator.Discover.IFieldDefStrategy"/>
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Specification.ConnectionString">
+            <summary>
+            Connection string to get the table scheme from. This property is mandatory if <see cref="F:SqlGenerator.Discover.DiscoverStrategy.ConnectToDatabase"/> strategy is used
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Specification.DiscoverStrategy">
+            <summary>
+            Which stratgy will follow to guess field names and data types. Default <see cref="F:SqlGenerator.Discover.DiscoverStrategy.FieldDefDescriptor"/>
+            </summary>
+        </member>
         <member name="P:SqlGenerator.Specification.RowsToScan">
             <summary>
             Number of rows to scan to try to guess the fields data type
@@ -139,6 +248,48 @@
         <member name="P:SqlGenerator.Specification.WorkSheetName">
             <summary>
             For Excel files, thw worksheet that contains the source data. If not specified, the first worksheet (by index) is taken
+            </summary>
+        </member>
+        <member name="T:SqlGenerator.SqlGeneratorExtensions">
+            <summary>
+            Dependency injection extensions for SqlGenerator
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.SqlGeneratorExtensions.AddSqlGenerator(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Register the neccesary DI in the services colection
+            </summary>
+        </member>
+        <member name="T:SqlGenerator.TableDef">
+            <summary>
+            Table definition schema
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.TableDef.TableName">
+            <summary>
+            Name of the table
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.TableDef.Fields">
+            <summary>
+            Collection of <see cref="T:SqlGenerator.FieldDef"/>
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.TableDef.Item(System.Int32)">
+            <summary>
+            Return <see cref="T:SqlGenerator.FieldDef"/> by position
+            </summary>
+            <param name="i">Field position</param>
+        </member>
+        <member name="P:SqlGenerator.TableDef.Item(System.String)">
+            <summary>
+            Return <see cref="T:SqlGenerator.FieldDef"/> by name
+            </summary>
+            <param name="name">name of the matching field</param>
+        </member>
+        <member name="P:SqlGenerator.TableDef.Keys">
+            <summary>
+            Collection of field names that belong to the primary key. Used to generate Update SQL scripts
             </summary>
         </member>
     </members>
