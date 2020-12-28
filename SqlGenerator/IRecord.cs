@@ -61,5 +61,15 @@ namespace SqlGenerator
         /// </summary>
         public double AsNumber(int i);
 
+        /// <summary>
+        /// Returns <c>true</c> if column contains null value
+        /// </summary>
+        public bool IsNull(string name);
+
+        /// <summary>
+        /// Returns <c>true</c> if column contains null value
+        /// </summary>
+        public bool IsNull(int i);
+
     }
 }

@@ -389,5 +389,28 @@ namespace SqlGenerator.Sources
         public double AsNumber(int i) {
             return GetField<double>(i);
         }
+
+        /// <summary>
+        /// Inherited <see cref="IRecord.IsNull(string)"/>
+        /// </summary>
+
+        public bool IsNull(string name) {
+            return InternalIsNull(TableDef[name]);
+        }
+
+        /// <summary>
+        /// Inherited <see cref="IRecord.IsNull(int)"/>
+        /// </summary>
+        public bool IsNull(int i) {
+            return InternalIsNull(TableDef[i]);
+        }
+
+        private bool InternalIsNull(FieldDef fld) {
+            if (fld.FieldType == FieldType.Text) {
+                return RowData[fld.OrdinalPosition] == null;
+            } else {
+                return string.IsNullOrEmpty(RowData[fld.OrdinalPosition]);
+            }
+        }
     }
 }

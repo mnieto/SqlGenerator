@@ -165,6 +165,386 @@
             If <see cref="P:SqlGenerator.FieldDef.Format"/> is not specified, allowed pairs are: true/false, yes/no, y/n, 1/0, -1/0, x/&lt;space&gt;
             </remarks>
         </member>
+        <member name="T:SqlGenerator.GeneratorBase">
+            <summary>
+            Base absract class for SQL generators
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.GeneratorBase.Reader">
+            <summary>
+            <see cref="T:SqlGenerator.IReader"/> that provides the data to transform in SQL instructions
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.GeneratorBase.TableDef">
+            <summary>
+            Definition (Schema) of the table
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.GeneratorBase.Information">
+            <summary>
+            Datasource metadata information like fields quotes, literal quotes, sentences separator...
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.GeneratorBase.#ctor(SqlGenerator.IReader,SqlGenerator.TableDef,SqlGenerator.DataSourceInformation)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="reader"><see cref="T:SqlGenerator.IReader"/> that provides de data</param>
+            <param name="tableDef">Table schema</param>
+            <param name="options">Datasource metadata information</param>
+        </member>
+        <member name="M:SqlGenerator.GeneratorBase.#ctor(SqlGenerator.IReader,SqlGenerator.TableDef,System.Action{SqlGenerator.DataSourceInformation})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="reader"><see cref="T:SqlGenerator.IReader"/> that provides de data</param>
+            <param name="tableDef">Table schema</param>
+            <param name="options">Allows to configure datasource metadata. By default MS SQL Server configuration is taken</param>
+        </member>
+        <member name="M:SqlGenerator.GeneratorBase.Generate(System.IO.TextWriter)">
+            <summary>
+            Generate the SQL sentences
+            </summary>
+            <param name="writer"><see cref="T:System.IO.TextWriter"/> where the SQL sentences are written</param>
+        </member>
+        <member name="M:SqlGenerator.GeneratorBase.GenerateSQL">
+            <summary>
+            Generates a single SQL sentence based on the current row in the <see cref="P:SqlGenerator.GeneratorBase.Reader"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SqlGenerator.GeneratorBase.GenerateFieldValue(SqlGenerator.FieldDef)">
+            <summary>
+            Generate del literal SQL representation for the specified <paramref name="fld"/> depending on the field data type
+            </summary>
+            <param name="fld"><see cref="T:SqlGenerator.FieldDef"/> with the field definition</param>
+            <returns>formated string according with the field data type containing the field value</returns>
+        </member>
+        <member name="M:SqlGenerator.GeneratorBase.QuoteIndentifier(System.String)">
+            <summary>
+            Quote identifier like table or field names
+            </summary>
+            <param name="identifier">value to be quoted</param>
+        </member>
+        <member name="M:SqlGenerator.GeneratorBase.QuoteLiteral(System.String)">
+            <summary>
+            Quote a string literal. Escapes the quote char if it is neccesary
+            </summary>
+            <param name="literal">literal value</param>
+        </member>
+        <member name="T:SqlGenerator.InsertGenerator">
+            <summary>
+            Generate insert SQL sentences for each data row
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.InsertGenerator.#ctor(SqlGenerator.IReader,SqlGenerator.TableDef,SqlGenerator.DataSourceInformation)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="reader"><see cref="T:SqlGenerator.IReader"/> that provides de data</param>
+            <param name="tableDef">Table schema</param>
+            <param name="options">Datasource metadata information</param>
+        </member>
+        <member name="M:SqlGenerator.InsertGenerator.#ctor(SqlGenerator.IReader,SqlGenerator.TableDef,System.Action{SqlGenerator.DataSourceInformation})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="reader"><see cref="T:SqlGenerator.IReader"/> that provides de data</param>
+            <param name="tableDef">Table schema</param>
+            <param name="options">Allows to configure datasource metadata. By default MS SQL Server configuration is taken</param>
+        </member>
+        <member name="M:SqlGenerator.InsertGenerator.GenerateSQL">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.GeneratorBase.GenerateSQL"/>
+            </summary>
+        </member>
+        <member name="T:SqlGenerator.IReader">
+            <summary>
+            Defines reader methods to get data from a <see cref="T:SqlGenerator.Sources.ISource"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IReader.Read">
+            <summary>
+            Read next record of data
+            </summary>
+            <returns><c>True</c> if there is more data. <c>False</c> if there is no more rows to read</returns>
+        </member>
+        <member name="T:SqlGenerator.IRecord">
+            <summary>
+            Provides access to the column values of current row for a <see cref="T:SqlGenerator.IReader"/>
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.IRecord.Item(System.Int32)">
+            <summary>
+            Get access to the nth column
+            </summary>
+            <param name="i">index of the column</param>
+            <returns>string representation of the column</returns>
+        </member>
+        <member name="P:SqlGenerator.IRecord.Item(System.String)">
+            <summary>
+            Get the column value with the specified name
+            </summary>
+            <param name="name">name of the column</param>
+            <returns>string representation of the column</returns>        
+        </member>
+        <member name="M:SqlGenerator.IRecord.AsBoolean(System.String)">
+            <summary>
+            Gets the value of the specified column as a boolean
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IRecord.AsBoolean(System.Int32)">
+            <summary>
+            Gets the value of the specified column as a boolean
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IRecord.AsString(System.String)">
+            <summary>
+            Gets the value of the specified column as a string
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IRecord.AsString(System.Int32)">
+            <summary>
+            Gets the value of the specified column as a string
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IRecord.AsDateTime(System.String)">
+            <summary>
+            Gets the value of the specified column as a DateTime
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IRecord.AsDateTime(System.Int32)">
+            <summary>
+            Gets the value of the specified column as a DateTime
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IRecord.AsNumber(System.String)">
+            <summary>
+            Gets the value of the specified column as a double
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IRecord.AsNumber(System.Int32)">
+            <summary>
+            Gets the value of the specified column as a double
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IRecord.IsNull(System.String)">
+            <summary>
+            Returns <c>true</c> if column contains null value
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.IRecord.IsNull(System.Int32)">
+            <summary>
+            Returns <c>true</c> if column contains null value
+            </summary>
+        </member>
+        <member name="T:SqlGenerator.Sources.BaseSource">
+            <summary>
+            Base class for data sources
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Sources.BaseSource.Headers">
+            <summary>
+            Names of the columns. If source has no headers, the collection will be empty
+            </summary>
+        </member>
+        <member name="F:SqlGenerator.Sources.BaseSource.FieldsBuffer">
+            <summary>
+            Contains the n first rows of data. These are used to guess the data type of each column
+            </summary>
+            <remarks>
+            If there is no need to guess data type, <see cref="F:SqlGenerator.Sources.BaseSource.FieldsBuffer"/> will be null
+            </remarks>
+        </member>
+        <member name="P:SqlGenerator.Sources.BaseSource.RowData">
+            <summary>
+            Stores the data of the current row when invoking the <see cref="M:SqlGenerator.Sources.BaseSource.Read"/> method. Current row is pointed by <see cref="P:SqlGenerator.Sources.BaseSource.CurrentRow"/> property
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Sources.BaseSource.CurrentRow">
+            <summary>
+            Points to the current read possition
+            </summary>
+            <remarks>
+            If you override the <see cref="M:SqlGenerator.Sources.BaseSource.Read"/> method you probably will need to increase this value in each read operation
+            </remarks>
+        </member>
+        <member name="P:SqlGenerator.Sources.BaseSource.TableDef">
+            <summary>
+            Contains the table schema (definition)
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Sources.BaseSource.TableName">
+            <summary>
+            Gets the name of the table
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Sources.BaseSource.IsLoaded">
+            <summary>
+            <c>True</c> if table schema is loaded, otherwise it is <c>false</c>
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Sources.BaseSource.Errors">
+            <summary>
+            Contains, if any, the errors that occured while loading schema or reading data
+            </summary>
+        </member>
+        <member name="P:SqlGenerator.Sources.BaseSource.Item(System.String)">
+            <summary>
+            Gets the value of the column specified by name
+            </summary>
+            <param name="name">name of the column</param>
+            <exception cref="T:System.NotSupportedException"> when the source has no headers</exception>
+            <exception cref="T:System.IndexOutOfRangeException"> if the specified name doesn't correspond whith an existim column</exception>
+        </member>
+        <member name="P:SqlGenerator.Sources.BaseSource.Item(System.Int32)">
+            <summary>
+            Gets the value of the column specified by position
+            </summary>
+            <param name="i">index of the column</param>
+            <exception cref="T:System.IndexOutOfRangeException"> if the specified index is out of the columns range</exception>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.Load(System.String)">
+            <summary>
+            Load the schema of the table from the specified file
+            </summary>
+            <param name="fileName">Name of the file to read from</param>
+            <remarks>
+            Inheritors must call to <see cref="M:SqlGenerator.Sources.BaseSource.DiscoverTableDef"/> method from <see cref="M:SqlGenerator.Sources.BaseSource.Load(System.String)"/>
+            </remarks>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.Read">
+            <summary>
+            Read the next row of data
+            </summary>
+            <returns><c>True</c> if there is mor data to read. <c>False</c> if there is no more data</returns>
+            <remarks>
+            Note to inheritors: Row information is stored in <see cref="P:SqlGenerator.Sources.BaseSource.RowData"/> property and <see cref="P:SqlGenerator.Sources.BaseSource.CurrentRow"/> is incremented in each call to <see cref="M:SqlGenerator.Sources.BaseSource.Read"/>
+            </remarks>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.GetField``1(System.String)">
+            <summary>
+            Internally used by AsString, AsBoolean, AsNumber... methods to cast to the specified data type
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.GetField``1(System.Int32)">
+            <summary>
+            Internally used by AsString, AsBoolean, AsNumber... methods to cast to the specified data type
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.ConvertTo``1(SqlGenerator.FieldDef)">
+            <summary>
+            Internally used by GetField{T} methods
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.GetHeaders(System.Int32)">
+            <summary>
+            Retrive the headers from the source
+            </summary>
+            <param name="row">Number of the row where the headers are located</param>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.GetTableName">
+            <summary>
+            Retrieve the table name from the source
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.ReadBufferRows(System.Int32)">
+            <summary>
+            Read up to the first n rows to guess to data type of each column
+            </summary>
+            <param name="numRows">Number of rows to read</param>
+            <remarks>
+            Readed rows are stored in <see cref="F:SqlGenerator.Sources.BaseSource.FieldsBuffer"/>. The <see cref="M:SqlGenerator.Sources.BaseSource.Read"/> method gets transparently data from the buffer or from source file when needed
+            </remarks>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.ReadRow(System.Int32)">
+            <summary>
+            Read the next row of data
+            </summary>
+            <param name="rowNumber">Number of row to be read</param>
+            <returns>A tuple with data read and a boolean that indicates if there is more data or not</returns>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.DiscoverTableDef">
+            <summary>
+            Try different strategies to get the table's schema
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.BuildTableDef">
+            <summary>
+            Ensures that <see cref="P:SqlGenerator.Sources.BaseSource.TableDef"/> is valid and its information is not invalidated by subsequent calls to UseXXXX methods
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.UseDatabase(System.String)">
+            <summary>
+            Uses database strategy to get the table's schema
+            </summary>
+            <param name="connectionString">connection string neccesary to connect to the database</param>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.UseFieldDescriptor">
+            <summary>
+            Uses <see cref="T:SqlGenerator.Discover.FieldDefParserStrategy"/> strategy to get the table's schema
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.UseFieldNames">
+            <summary>
+            Uses field names as strategy to get the table's schema
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.UseScan(System.Int32)">
+            <summary>
+            Uses <see cref="T:SqlGenerator.Discover.SamplingStrategy"/> strategy to get the table's schema
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.AsBoolean(System.String)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.AsBoolean(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.AsBoolean(System.Int32)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.AsBoolean(System.Int32)"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.AsString(System.String)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.AsString(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.AsString(System.Int32)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.AsString(System.Int32)"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.AsDateTime(System.String)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.AsDateTime(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.AsDateTime(System.Int32)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.AsDateTime(System.Int32)"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.AsNumber(System.String)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.AsNumber(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.AsNumber(System.Int32)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.AsNumber(System.Int32)"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.IsNull(System.String)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.IsNull(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:SqlGenerator.Sources.BaseSource.IsNull(System.Int32)">
+            <summary>
+            Inherited <see cref="M:SqlGenerator.IRecord.IsNull(System.Int32)"/>
+            </summary>
+        </member>
         <member name="T:SqlGenerator.Sources.ISource">
             <summary>
             Iterface for all data sources
