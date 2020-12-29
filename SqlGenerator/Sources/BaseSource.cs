@@ -19,7 +19,7 @@ namespace SqlGenerator.Sources
         protected Specification Options { get; set; }
         protected ILogger Logger { get; set; }
 
-        protected IFieldDefStrategy DataTypeSampling {get; init; }
+        protected IDiscoverFieldDefFactory DiscoverFieldDefFactory { get; init; }
 
         /// <summary>
         /// Names of the columns. If source has no headers, the collection will be empty
@@ -98,11 +98,11 @@ namespace SqlGenerator.Sources
             }
         }
 
-        public BaseSource(IOptions<Specification> options, ILogger logger, IFieldDefStrategy dataTypeSampling) {
+        public BaseSource(IOptions<Specification> options, ILogger logger, IDiscoverFieldDefFactory discoverFieldDefFactory) {
             Options = options?.Value ?? throw new ArgumentNullException(nameof(options));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             DiscoverStrategy = Options.DiscoverStrategy;
-            DataTypeSampling = dataTypeSampling ?? throw new ArgumentNullException(nameof(dataTypeSampling));
+            DiscoverFieldDefFactory = discoverFieldDefFactory ?? throw new ArgumentNullException(nameof(discoverFieldDefFactory));
 
             Headers = new List<string>();
             Errors = new List<string>();
@@ -118,6 +118,10 @@ namespace SqlGenerator.Sources
         /// </remarks>
         public abstract void Load(string fileName);
 
+
+        public IReader GetReader() {
+            return this;
+        }
 
 
         /// <summary>
@@ -179,7 +183,8 @@ namespace SqlGenerator.Sources
                         throw new InvalidCastException($"Can't convert {RowData[fld.OrdinalPosition]} to boolean value");
                 case FieldType.DateTime:
                     if (string.IsNullOrEmpty(fld.Format)) {
-                        return (T)Convert.ChangeType(RowData[fld.OrdinalPosition], typeof(T));
+                        string value = RowData[fld.OrdinalPosition];
+                        return (T)Convert.ChangeType(value, typeof(T));
                     } else {
                         DateTime d = DateTime.ParseExact(RowData[fld.OrdinalPosition], fld.Format, null);
                         return (T)Convert.ChangeType(d, typeof(T));
@@ -267,8 +272,9 @@ namespace SqlGenerator.Sources
 
             BuildTableDef();
 
+            var dataTypeSampling = DiscoverFieldDefFactory.GetDiscoverStrategy(DiscoverStrategy);
             foreach (string descriptor in Headers) {
-                var result = DataTypeSampling.GetFieldDef(descriptor);
+                var result = dataTypeSampling.GetFieldDef(descriptor);
                 if (result.Success) {
                     result.Field.OrdinalPosition = TableDef.Fields.Count;
                     TableDef.Fields.Add(result.Field);
@@ -278,9 +284,8 @@ namespace SqlGenerator.Sources
             }
             if (TableDef.Fields.Count != Headers.Count()) {
                 TableDef = null;
-                if (Options.DiscoverStrategy == DiscoverStrategy.Auto) {
-                    DiscoverStrategy = DiscoverStrategy.GuessDataType;
-                }
+                Errors.Clear();
+                DiscoverStrategy = DiscoverStrategy.GuessDataType;
             }
         }
 
@@ -308,15 +313,17 @@ namespace SqlGenerator.Sources
 
             FieldsBuffer = ReadBufferRows(numRows);
             int i = 0;
+            var dataTypeSampling = DiscoverFieldDefFactory.GetDiscoverStrategy(DiscoverStrategy);
             foreach (string header in Headers) {
-                var data = FieldsBuffer.Select(x => x[i++]);
-                var parseResult = DataTypeSampling.GetFieldDef(header, data);
+                var data = FieldsBuffer.Select(x => x[i]);
+                var parseResult = dataTypeSampling.GetFieldDef(header, data);
                 if (parseResult.Success) {
                     parseResult.Field.OrdinalPosition = TableDef.Fields.Count;
                     TableDef.Fields.Add(parseResult.Field);
                 }
+                i++;
             }
-
+            
         }
 
 
@@ -403,9 +410,11 @@ namespace SqlGenerator.Sources
         private bool InternalIsNull(FieldDef fld) {
             if (fld.FieldType == FieldType.Text) {
                 return RowData[fld.OrdinalPosition] == null;
-            } else {
-                return string.IsNullOrEmpty(RowData[fld.OrdinalPosition]);
+            } else if (fld.FieldType == FieldType.DateTime && RowData[fld.OrdinalPosition] == "0000-00-00 00:00:00") {
+                //MySQL stores 'false' datetime values for NULL or invalid values. See: https://dev.mysql.com/doc/refman/5.6/en/sql-mode.html#sqlmode_no_zero_date
+                return true;
             }
+            return string.IsNullOrEmpty(RowData[fld.OrdinalPosition]);
         }
     }
 }

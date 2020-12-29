@@ -29,5 +29,10 @@ namespace SqlGenerator.Sources
         /// <param name="fileName">File name with the data</param>
         void Load(string fileName);
 
+        /// <summary>
+        /// Returs the <see cref="IReader"/> associated to the data source
+        /// </summary>
+        IReader GetReader();
+
     }
 }
