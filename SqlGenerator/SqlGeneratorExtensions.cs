@@ -21,10 +21,17 @@ namespace SqlGenerator
         /// </summary>
         public static void AddSqlGenerator(this IServiceCollection services) {
             services.AddTransient<SourceFactory>();
+            services.AddTransient<ExcelSource>();
             services.AddTransient<ISource, ExcelSource>(s => s.GetService<ExcelSource>());
             services.AddTransient<IDiscoverFieldDefFactory, DiscoverFieldDefFactory>();
+            services.AddTransient<SamplingStrategy>();
+            services.AddTransient<FieldDefParserStrategy>();
             services.AddTransient<IFieldDefStrategy, SamplingStrategy>(s => s.GetService<SamplingStrategy>());
             services.AddTransient<IFieldDefStrategy, FieldDefParserStrategy>(s => s.GetService<FieldDefParserStrategy>());
+            
+            services.AddTransient<IReader, ExcelSource>(s => s.GetService<ExcelSource>());
+            services.AddTransient<IGenerator, InsertGenerator>();
+
         }
     }
 }

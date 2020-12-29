@@ -33,6 +33,18 @@ namespace sqlg
             _logger.LogInformation($"TableName: {_specification.TableName}");
             _logger.LogInformation($"Source: {options.Source}");
             _logger.LogInformation($"Target: {options.Target}");
+
+            source.Load(options.Source);
+
+            var g = new InsertGenerator(source.GetReader(), source.TableDef);
+
+            TextWriter output;
+            if (string.IsNullOrEmpty(options.Target))
+                output = Console.Out;
+            else
+                output = new StreamWriter(options.Target);
+            g.Generate(output);
+
         }
     }
 }
