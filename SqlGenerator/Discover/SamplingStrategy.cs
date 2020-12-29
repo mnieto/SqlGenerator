@@ -40,6 +40,7 @@ namespace SqlGenerator.Discover
                     //TODO: try to infer the date time format using groups in the regex and add it to a HasSet
                 } else if (double.TryParse(value, out num)) {
                     counters[FieldType.Numeric]++;
+                    distinct.Add(value);
                 } else {
                     counters[FieldType.Text]++;
                     distinct.Add(value);
@@ -51,7 +52,12 @@ namespace SqlGenerator.Discover
             if (counters[FieldType.Auto] == data.Count()) {
                 result.Field.FieldType = FieldType.Auto;
             } else if (counters[FieldType.Numeric] + counters[FieldType.Auto] == data.Count()) {
-                result.Field.FieldType = FieldType.Numeric;
+                if (distinct.Count <= 2) {
+                    result.Field.FieldType = FieldType.Bool;
+                    result.Field.Format = string.Join('/', distinct).ToUpper();
+                } else {
+                    result.Field.FieldType = FieldType.Numeric;
+                }
             } else if (counters[FieldType.DateTime] + counters[FieldType.Auto] == data.Count()) {
                 result.Field.FieldType = FieldType.DateTime;
             } else if (distinct.Count <= 2) {
