@@ -157,7 +157,6 @@ namespace SqlGenerator.Sources
         /// </summary>
         protected virtual T ConvertTo<T>(FieldDef fld) {
             switch (fld.FieldType) {
-                case FieldType.Auto:
                 case FieldType.Text:
                 case FieldType.Numeric:
                     return (T)Convert.ChangeType(RowData[fld.OrdinalPosition], typeof(T));
@@ -220,8 +219,12 @@ namespace SqlGenerator.Sources
 
         /// <summary>
         /// Try different strategies to get the table's schema
+        /// Auto => ConnectToDatabase => FielDefDescriptor => GuessDataType
         /// </summary>
         protected virtual void DiscoverTableDef() {
+            if (DiscoverStrategy == DiscoverStrategy.Auto) {
+                    DiscoverStrategy = DiscoverStrategy.ConnectToDatabase;
+            }
             if (DiscoverStrategy == DiscoverStrategy.ConnectToDatabase) {
                 if (!string.IsNullOrEmpty(Options.ConnectionString))
                     UseDatabase(Options.ConnectionString);
@@ -231,16 +234,8 @@ namespace SqlGenerator.Sources
             if (DiscoverStrategy == DiscoverStrategy.FieldDefDescriptor) {
                 UseFieldDescriptor();
             }
-            if (DiscoverStrategy == DiscoverStrategy.FieldNamesOnly) {
-                UseFieldNames();
-                if (Options.RowsToScan.GetValueOrDefault(0) > 0) {
-                    DiscoverStrategy = DiscoverStrategy.GuestDataType;
-                }
-            }
-            if (DiscoverStrategy == DiscoverStrategy.GuestDataType) {
-                if (Options.RowsToScan.GetValueOrDefault(0) == 0)
-                    throw new InvalidOperationException($"{nameof(Options.RowsToScan)} option is mandatory when {nameof(DiscoverStrategy)} is {nameof(DiscoverStrategy.GuestDataType)}.");
-                UseScan(Options.RowsToScan.Value);
+            if (DiscoverStrategy == DiscoverStrategy.GuessDataType) {
+                UseScan(Options.RowsToScan);
             }
         }
 
@@ -284,7 +279,7 @@ namespace SqlGenerator.Sources
             if (TableDef.Fields.Count != Headers.Count()) {
                 TableDef = null;
                 if (Options.DiscoverStrategy == DiscoverStrategy.Auto) {
-                    DiscoverStrategy = DiscoverStrategy.FieldNamesOnly;
+                    DiscoverStrategy = DiscoverStrategy.GuessDataType;
                 }
             }
         }

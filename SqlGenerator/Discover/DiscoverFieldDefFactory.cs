@@ -20,11 +20,9 @@ namespace SqlGenerator.Discover
                     (IFieldDefStrategy)Services.GetService(typeof(FieldDefParserStrategy)),
                 DiscoverStrategy.ConnectToDatabase =>
                    throw new NotImplementedException(),
-                DiscoverStrategy.FieldNamesOnly =>
-                    throw new ArgumentException($"{DiscoverStrategy.FieldNamesOnly}: not supported discovery strategy."),
                 DiscoverStrategy.FieldDefDescriptor =>
                     (IFieldDefStrategy)Services.GetService(typeof(FieldDefParserStrategy)),
-                DiscoverStrategy.GuestDataType =>
+                DiscoverStrategy.GuessDataType =>
                     (IFieldDefStrategy)Services.GetService(typeof(SamplingStrategy)),
 
                 _ => throw new NotImplementedException()

@@ -12,7 +12,7 @@ namespace SqlGenerator
         /// Field type not set. Will try to guess for each read value.
         /// </summary>
         /// <remarks>
-        /// When <see cref="DiscoverStrategy"/> is <see cref="DiscoverStrategy.GuestDataType"/> and all scaned rows are <c>null</c>, FieldType remains Auto
+        /// When <see cref="DiscoverStrategy"/> is <see cref="DiscoverStrategy.GuessDataType"/> and all scaned rows are <c>null</c>, FieldType remains Auto
         /// </remarks>
         Auto,
 

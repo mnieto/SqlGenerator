@@ -12,6 +12,7 @@ namespace SqlGenerator
     /// Indications to load data and generate the SQL scripts
     /// </summary>
     public class Specification {
+        private int _rowsToScan = 50;
 
         /// <summary>
         /// Table name used to generate the SQL scripts. If ommited, can be infered by the <see cref="IFieldDefStrategy"/>
@@ -33,21 +34,17 @@ namespace SqlGenerator
         /// Number of rows to scan to try to guess the fields data type
         /// </summary>
         /// <remarks>
-        /// Depending on the value of <see cref="DiscoverStrategy"/>
-        /// <list type="bullet">
-        /// <item><term><see cref="DiscoverStrategy.GuestDataType"/></term>
-        /// <description>This field is mandatory/></description>
-        /// </item>
-        /// <item><term><see cref="DiscoverStrategy.FieldNamesOnly"/></term>
-        /// <description>
-        /// If this field has no value or it is 0, <see cref="FieldType"/> will be <see cref="FieldType.Auto"/> 
-        /// and data type will be guessed in each occurrence. If has a value greather than 0, field data types will be
-        /// guessed scaning up to the specified row
-        /// </description>
-        /// </item>
-        /// </list>
+        /// If the value of <see cref="DiscoverStrategy"/> is <see cref="DiscoverStrategy.ConnectToDatabase"/> or <see cref="DiscoverStrategy.FieldDefDescriptor"/> 
+        /// this value is ignored. The value must be grater than 0. Default value is 50.
         /// </remarks>
-        public int? RowsToScan { get; set; }
+        public int RowsToScan {
+            get { return _rowsToScan; }
+            set {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException("Value must be greater than 0.");
+                _rowsToScan = value;
+            }
+        }
 
         /// <summary>
         /// For Excel files, thw worksheet that contains the source data. If not specified, the first worksheet (by index) is taken

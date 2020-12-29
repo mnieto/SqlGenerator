@@ -33,12 +33,7 @@
             </summary>
             <seealso cref="T:SqlGenerator.Discover.FieldDefParserStrategy"/>
         </member>
-        <member name="F:SqlGenerator.Discover.DiscoverStrategy.FieldNamesOnly">
-            <summary>
-            Retrieves only field names. Data type is guessed for each data row and column
-            </summary>
-        </member>
-        <member name="F:SqlGenerator.Discover.DiscoverStrategy.GuestDataType">
+        <member name="F:SqlGenerator.Discover.DiscoverStrategy.GuessDataType">
             <summary>
             Get a sample of data of max <see cref="P:SqlGenerator.Specification.RowsToScan"/> rows and, for each column try to guess the data type and other properties
             </summary>
@@ -132,7 +127,7 @@
             Field type not set. Will try to guess for each read value.
             </summary>
             <remarks>
-            When <see cref="T:SqlGenerator.Discover.DiscoverStrategy"/> is <see cref="F:SqlGenerator.Discover.DiscoverStrategy.GuestDataType"/> and all scaned rows are <c>null</c>, FieldType remains Auto
+            When <see cref="T:SqlGenerator.Discover.DiscoverStrategy"/> is <see cref="F:SqlGenerator.Discover.DiscoverStrategy.GuessDataType"/> and all scaned rows are <c>null</c>, FieldType remains Auto
             </remarks>
         </member>
         <member name="F:SqlGenerator.FieldType.Text">
@@ -467,6 +462,7 @@
         <member name="M:SqlGenerator.Sources.BaseSource.DiscoverTableDef">
             <summary>
             Try different strategies to get the table's schema
+            Auto => ConnectToDatabase => FielDefDescriptor => GuessDataType
             </summary>
         </member>
         <member name="M:SqlGenerator.Sources.BaseSource.BuildTableDef">
@@ -610,19 +606,8 @@
             Number of rows to scan to try to guess the fields data type
             </summary>
             <remarks>
-            Depending on the value of <see cref="P:SqlGenerator.Specification.DiscoverStrategy"/>
-            <list type="bullet">
-            <item><term><see cref="F:SqlGenerator.Discover.DiscoverStrategy.GuestDataType"/></term>
-            <description>This field is mandatory/></description>
-            </item>
-            <item><term><see cref="F:SqlGenerator.Discover.DiscoverStrategy.FieldNamesOnly"/></term>
-            <description>
-            If this field has no value or it is 0, <see cref="T:SqlGenerator.FieldType"/> will be <see cref="F:SqlGenerator.FieldType.Auto"/> 
-            and data type will be guessed in each occurrence. If has a value greather than 0, field data types will be
-            guessed scaning up to the specified row
-            </description>
-            </item>
-            </list>
+            If the value of <see cref="P:SqlGenerator.Specification.DiscoverStrategy"/> is <see cref="F:SqlGenerator.Discover.DiscoverStrategy.ConnectToDatabase"/> or <see cref="F:SqlGenerator.Discover.DiscoverStrategy.FieldDefDescriptor"/> 
+            this value is ignored. The value must be grater than 0. Default value is 50.
             </remarks>
         </member>
         <member name="P:SqlGenerator.Specification.WorkSheetName">

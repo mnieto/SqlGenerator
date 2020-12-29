@@ -37,13 +37,8 @@ namespace SqlGenerator.Discover
         FieldDefDescriptor = 2,
 
         /// <summary>
-        /// Retrieves only field names. Data type is guessed for each data row and column
-        /// </summary>
-        FieldNamesOnly = 3,
-
-        /// <summary>
         /// Get a sample of data of max <see cref="Specification.RowsToScan"/> rows and, for each column try to guess the data type and other properties
         /// </summary>
-        GuestDataType = 4
+        GuessDataType = 3
     }
 }
