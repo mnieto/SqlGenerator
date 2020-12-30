@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,19 +18,21 @@ namespace SqlGenerator
         /// Constructor
         /// </summary>
         /// <param name="reader"><see cref="IReader"/> that provides de data</param>
+        /// <param name="logger">Logger</param>
         /// <param name="tableDef">Table schema</param>
         /// <param name="options">Datasource metadata information</param>
-        public InsertGenerator(IReader reader, TableDef tableDef, DataSourceInformation options) :
-            base(reader, tableDef, options)  {  }
+        public InsertGenerator(IReader reader, ILogger logger, TableDef tableDef, DataSourceInformation options) :
+            base(reader, logger, tableDef, options)  {  }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="reader"><see cref="IReader"/> that provides de data</param>
+        /// /// <param name="logger">Logger</param>
         /// <param name="tableDef">Table schema</param>
         /// <param name="options">Allows to configure datasource metadata. By default MS SQL Server configuration is taken</param>
-        public InsertGenerator(IReader reader, TableDef tableDef, Action<DataSourceInformation> options = null) :
-            base(reader, tableDef, options) { }
+        public InsertGenerator(IReader reader, ILogger logger, TableDef tableDef, Action<DataSourceInformation> options = null) :
+            base(reader, logger, tableDef, options) { }
 
 
 

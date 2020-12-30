@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 
 namespace SqlGenerator
@@ -23,15 +24,22 @@ namespace SqlGenerator
         /// </summary>
         protected DataSourceInformation Information { get; set; }
 
+        /// <summary>
+        /// Logger
+        /// </summary>
+        protected ILogger Logger { get; set; }
+
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="reader"><see cref="IReader"/> that provides de data</param>
+        /// <param name="logger">Logger</param>
         /// <param name="tableDef">Table schema</param>
         /// <param name="options">Datasource metadata information</param>
-        public GeneratorBase(IReader reader, TableDef tableDef, DataSourceInformation options) {
+        public GeneratorBase(IReader reader, ILogger logger, TableDef tableDef, DataSourceInformation options) {
             Reader = reader;
+            Logger = logger;
             TableDef = tableDef;
             Information = new DataSourceInformation();
             Information = options;
@@ -41,10 +49,12 @@ namespace SqlGenerator
         /// Constructor
         /// </summary>
         /// <param name="reader"><see cref="IReader"/> that provides de data</param>
+        /// <param name="logger">Logger</param>
         /// <param name="tableDef">Table schema</param>
         /// <param name="options">Allows to configure datasource metadata. By default MS SQL Server configuration is taken</param>
-        public GeneratorBase(IReader reader, TableDef tableDef, Action<DataSourceInformation> options = null) {
+        public GeneratorBase(IReader reader, ILogger logger, TableDef tableDef, Action<DataSourceInformation> options = null) {
             Reader = reader;
+            Logger = logger;
             TableDef = tableDef;
             Information = new DataSourceInformation();
             if (options != null) {
@@ -75,23 +85,29 @@ namespace SqlGenerator
         /// <param name="fld"><see cref="FieldDef"/> with the field definition</param>
         /// <returns>formated string according with the field data type containing the field value</returns>
         protected string GenerateFieldValue(FieldDef fld) {
-            if (fld.IsNullable && Reader.IsNull(fld.OrdinalPosition))
-                return Information.NullValue;
-            switch (fld.FieldType) {
-                case FieldType.Text:
-                    return QuoteLiteral(Reader.AsString(fld.OrdinalPosition));
-                case FieldType.Bool:
-                    return Reader.AsBoolean(fld.OrdinalPosition) ? Information.TrueValue : Information.FalseValue;
-                case FieldType.Numeric:
-                    return Reader.AsNumber(fld.OrdinalPosition).ToString(System.Globalization.CultureInfo.InvariantCulture);
-                case FieldType.DateTime:
-                    string format = Information.DateTimeFormat;
-                    if (!string.IsNullOrEmpty(fld.Format))
-                        format = fld.Format;
-                    string dateWithFormat = Reader.AsDateTime(fld.OrdinalPosition).ToString(format);
-                    return string.Format(Information.DateTimeTemplate, dateWithFormat);
-                default:
-                    throw new NotSupportedException($"{fld.FieldType} not supported");
+            try {
+                if (fld.IsNullable && Reader.IsNull(fld.OrdinalPosition))
+                    return Information.NullValue;
+                switch (fld.FieldType) {
+                    case FieldType.Text:
+                        return QuoteLiteral(Reader.AsString(fld.OrdinalPosition));
+                    case FieldType.Bool:
+                        return Reader.AsBoolean(fld.OrdinalPosition) ? Information.TrueValue : Information.FalseValue;
+                    case FieldType.Numeric:
+                        return Reader.AsNumber(fld.OrdinalPosition).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    case FieldType.DateTime:
+                        string format = Information.DateTimeFormat;
+                        if (!string.IsNullOrEmpty(fld.Format))
+                            format = fld.Format;
+                        string dateWithFormat = Reader.AsDateTime(fld.OrdinalPosition).ToString(format);
+                        return string.Format(Information.DateTimeTemplate, dateWithFormat);
+                    default:
+                        throw new NotSupportedException($"{fld.FieldType} not supported");
+                }
+            } catch (Exception ex) {
+                Logger.LogError(ex, "Conversion error at ({row}, {col}) to {type}: '{value}'.", 
+                    Reader.CurrentRow, fld.OrdinalPosition, fld.FieldType, Reader.AsString(fld.OrdinalPosition));
+                throw;
             }
         }
 

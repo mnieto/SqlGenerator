@@ -18,5 +18,10 @@ namespace SqlGenerator
         /// <returns><c>True</c> if there is more data. <c>False</c> if there is no more rows to read</returns>
         bool Read();
 
+        /// <summary>
+        /// Row number was read
+        /// </summary>
+        int CurrentRow { get; }
+
     }
 }

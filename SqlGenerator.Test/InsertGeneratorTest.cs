@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using Moq;
+
 
 namespace SqlGenerator.Test
 {
@@ -44,7 +46,7 @@ namespace SqlGenerator.Test
                     OrdinalPosition = 2
                 }
             });
-            var sut = new InsertGenerator(source.Object, tbDef);
+            var sut = new InsertGenerator(source.Object, NullLogger<InsertGenerator>.Instance, tbDef);
             string sql = sut.GenerateSQL();
 
             Assert.Equal("INSERT INTO [TestTable] ([Id], [Name], [Enabled]) VALUES (10, 'John''s house', 1);", sql);
@@ -80,7 +82,7 @@ namespace SqlGenerator.Test
                 }
             });
 
-            var sut = new InsertGenerator(source.Object, tbDef);
+            var sut = new InsertGenerator(source.Object, NullLogger<InsertGenerator>.Instance, tbDef);
             sut.Generate(sw);
 
             Assert.Equal(string.Empty, sw.ToString());
@@ -131,7 +133,7 @@ namespace SqlGenerator.Test
                 }
             });
 
-            var sut = new InsertGenerator(source.Object, tbDef);
+            var sut = new InsertGenerator(source.Object, NullLogger<InsertGenerator>.Instance, tbDef);
             sut.Generate(sw);
             string[] lines = sw.ToString().Split(sw.NewLine, StringSplitOptions.RemoveEmptyEntries);
             Assert.Equal(2, lines.Length);
@@ -184,7 +186,7 @@ namespace SqlGenerator.Test
                 }
             });
 
-            var sut = new InsertGenerator(source.Object, tbDef);
+            var sut = new InsertGenerator(source.Object, NullLogger<InsertGenerator>.Instance, tbDef);
             sut.Generate(sw);
             string[] lines = sw.ToString().Split(sw.NewLine, StringSplitOptions.RemoveEmptyEntries);
             Assert.Collection(lines,

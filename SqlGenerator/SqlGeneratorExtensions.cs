@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("SqlGenerator.Test")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace SqlGenerator
 {
     /// <summary>
@@ -30,8 +31,9 @@ namespace SqlGenerator
             services.AddTransient<IFieldDefStrategy, FieldDefParserStrategy>(s => s.GetService<FieldDefParserStrategy>());
             
             services.AddTransient<IReader, ExcelSource>(s => s.GetService<ExcelSource>());
+            
+            services.AddTransient<IGeneratorFactory, GeneratorFactory>();
             services.AddTransient<IGenerator, InsertGenerator>();
-
         }
     }
 }

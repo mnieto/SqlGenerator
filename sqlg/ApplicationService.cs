@@ -9,19 +9,20 @@ using SqlGenerator;
 
 namespace sqlg
 {
-    internal class ApplicationService
-    {
+    internal class ApplicationService {
 
         private ILogger<ApplicationService> _logger;
         private Specification _specification;
+        private IGeneratorFactory GeneratorFactory {get; set; }
         private SourceFactory SourceFactory { get; set; }
 
-        public ApplicationService(ILogger<ApplicationService> logger, IOptions<Specification> specification, SourceFactory sourceFactory) {
+        public ApplicationService(ILogger<ApplicationService> logger, IOptions<Specification> specification, IGeneratorFactory generatorFactory, SourceFactory sourceFactory) {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _specification = specification?.Value ?? throw new ArgumentNullException(nameof(specification));
+            GeneratorFactory = generatorFactory ?? throw new ArgumentNullException(nameof(generatorFactory));
             SourceFactory = sourceFactory ?? throw new ArgumentNullException(nameof(sourceFactory));
-
         }
+
         public void Run(CommandLineOptions options) {
 
             if (!File.Exists(options.Source)) {
@@ -36,14 +37,13 @@ namespace sqlg
 
             source.Load(options.Source);
 
-            var g = new InsertGenerator(source.GetReader(), source.TableDef);
-
+            var generator = GeneratorFactory.GetGenerator(source.GetReader(), source.TableDef);
             TextWriter output;
             if (string.IsNullOrEmpty(options.Target))
                 output = Console.Out;
             else
                 output = new StreamWriter(options.Target);
-            g.Generate(output);
+            generator.Generate(output);
 
         }
     }

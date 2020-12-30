@@ -14,6 +14,7 @@ namespace SqlGenerator.Sources
     /// Base class for data sources
     /// </summary>
     internal abstract class BaseSource : ISource, IReader {
+        protected DiscoverStrategy InitialDiscoverStrategy;
         protected DiscoverStrategy DiscoverStrategy;
 
         protected Specification Options { get; set; }
@@ -47,7 +48,7 @@ namespace SqlGenerator.Sources
         /// <remarks>
         /// If you override the <see cref="Read"/> method you probably will need to increase this value in each read operation
         /// </remarks>
-        protected int CurrentRow { get; set; }
+        public int CurrentRow { get; protected set; }
 
         /// <summary>
         /// Contains the table schema (definition)
@@ -101,6 +102,7 @@ namespace SqlGenerator.Sources
         public BaseSource(IOptions<Specification> options, ILogger logger, IDiscoverFieldDefFactory discoverFieldDefFactory) {
             Options = options?.Value ?? throw new ArgumentNullException(nameof(options));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            InitialDiscoverStrategy = Options.DiscoverStrategy;
             DiscoverStrategy = Options.DiscoverStrategy;
             DiscoverFieldDefFactory = discoverFieldDefFactory ?? throw new ArgumentNullException(nameof(discoverFieldDefFactory));
 
@@ -228,12 +230,13 @@ namespace SqlGenerator.Sources
         /// </summary>
         protected virtual void DiscoverTableDef() {
             if (DiscoverStrategy == DiscoverStrategy.Auto) {
-                    DiscoverStrategy = DiscoverStrategy.ConnectToDatabase;
+                Logger.LogInformation($"Using {DiscoverStrategy.Auto} to guess fields information");
+                DiscoverStrategy = DiscoverStrategy.ConnectToDatabase;
             }
             if (DiscoverStrategy == DiscoverStrategy.ConnectToDatabase) {
                 if (!string.IsNullOrEmpty(Options.ConnectionString))
                     UseDatabase(Options.ConnectionString);
-                else
+                else if (InitialDiscoverStrategy == DiscoverStrategy.Auto)
                     DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor;
             }
             if (DiscoverStrategy == DiscoverStrategy.FieldDefDescriptor) {
@@ -261,6 +264,7 @@ namespace SqlGenerator.Sources
         /// </summary>
         /// <param name="connectionString">connection string neccesary to connect to the database</param>
         protected virtual void UseDatabase(string connectionString) {
+            Logger.LogInformation($"Using {DiscoverStrategy.ConnectToDatabase} to guess fields information");
             throw new NotImplementedException();
         }
 
@@ -270,6 +274,7 @@ namespace SqlGenerator.Sources
         /// </summary>
         protected virtual void UseFieldDescriptor() {
 
+            Logger.LogInformation($"Using {DiscoverStrategy.FieldDefDescriptor} to guess fields information");
             BuildTableDef();
 
             var dataTypeSampling = DiscoverFieldDefFactory.GetDiscoverStrategy(DiscoverStrategy);
@@ -279,28 +284,17 @@ namespace SqlGenerator.Sources
                     result.Field.OrdinalPosition = TableDef.Fields.Count;
                     TableDef.Fields.Add(result.Field);
                 } else {
-                    Errors.AddRange(result.Errors.Select(x => x.Message));
+                    var errors = result.Errors.Select(x => x.Message);
+                    Logger.LogWarning($"Error parsing {descriptor} field: {string.Join(Environment.NewLine, errors)}");
+                    Errors.AddRange(errors);
                 }
             }
             if (TableDef.Fields.Count != Headers.Count()) {
                 TableDef = null;
-                Errors.Clear();
-                DiscoverStrategy = DiscoverStrategy.GuessDataType;
-            }
-        }
-
-        /// <summary>
-        /// Uses field names as strategy to get the table's schema
-        /// </summary>
-        protected virtual void UseFieldNames() {
-
-            BuildTableDef();
-
-            foreach (string header in Headers) {
-                TableDef.Fields.Add(new FieldDef { 
-                    Name = header,
-                    OrdinalPosition = TableDef.Fields.Count
-                });
+                if (InitialDiscoverStrategy == DiscoverStrategy.Auto) {
+                    Errors.Clear();
+                    DiscoverStrategy = DiscoverStrategy.GuessDataType;
+                }
             }
         }
 
@@ -309,6 +303,7 @@ namespace SqlGenerator.Sources
         /// </summary>
         protected virtual void UseScan(int numRows) {
 
+            Logger.LogInformation($"Using {DiscoverStrategy.GuessDataType} to guess fields information");
             BuildTableDef();
 
             FieldsBuffer = ReadBufferRows(numRows);
