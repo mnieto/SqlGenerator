@@ -26,9 +26,9 @@ namespace SqlGenerator
 
 
         /// <summary>
-        /// Which stratgy will follow to guess field names and data types. Default <see cref="DiscoverStrategy.FieldDefDescriptor"/>
+        /// Which stratgy will follow to guess field names and data types. Default <see cref="DiscoverStrategy.Auto"/>
         /// </summary>
-        public DiscoverStrategy DiscoverStrategy { get; set; } = DiscoverStrategy.FieldDefDescriptor;
+        public DiscoverStrategy DiscoverStrategy { get; set; } = DiscoverStrategy.Auto;
 
         /// <summary>
         /// Number of rows to scan to try to guess the fields data type
