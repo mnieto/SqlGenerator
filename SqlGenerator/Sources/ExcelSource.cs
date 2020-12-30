@@ -30,10 +30,7 @@ namespace SqlGenerator.Sources
 
             Logger.LogDebug($"Selected '{_ws.Name}' worksheet.");
 
-
             DiscoverTableDef();
-
-
         }
 
         protected override IEnumerable<string> GetHeaders(int row) {
