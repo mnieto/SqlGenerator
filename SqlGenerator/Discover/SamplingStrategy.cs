@@ -52,7 +52,7 @@ namespace SqlGenerator.Discover
             if (counters[FieldType.Auto] == data.Count()) {
                 result.Field.FieldType = FieldType.Auto;
             } else if (counters[FieldType.Numeric] + counters[FieldType.Auto] == data.Count()) {
-                if (distinct.Count <= 2) {
+                if (distinct.Count == 2) {
                     result.Field.FieldType = FieldType.Bool;
                     result.Field.Format = string.Join('/', distinct).ToUpper();
                 } else {
@@ -60,13 +60,14 @@ namespace SqlGenerator.Discover
                 }
             } else if (counters[FieldType.DateTime] + counters[FieldType.Auto] == data.Count()) {
                 result.Field.FieldType = FieldType.DateTime;
-            } else if (distinct.Count <= 2) {
+            } else if (distinct.Count == 2) {
                 result.Field.FieldType = FieldType.Bool;
                 result.Field.Format = string.Join('/', distinct).ToUpper();
             } else {
                 result.Field.FieldType = FieldType.Text;
             }
 
+            Logger.LogInformation($"Detected {result.Field.ToString()}");
             return result;
         }
     }

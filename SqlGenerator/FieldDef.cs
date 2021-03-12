@@ -45,5 +45,15 @@ namespace SqlGenerator
         /// Format for <see cref="FieldType.Bool"/> and <see cref="FieldType.DateTime"/>. Ignored for other data types
         /// </summary>
         public string Format { get; set; }
+
+        public override string ToString() {
+            var sb = new StringBuilder();
+            sb.Append($"[{Name}]:{FieldType}, ");
+            sb.Append(IsNullable ? "Nullable" : "not nullable");
+            sb.Append($", PK={IsKey}");
+            sb.Append($", MaxLength={MaxLength}");
+            sb.Append($", Format={Format}");
+            return sb.ToString();
+        }
     }
 }
