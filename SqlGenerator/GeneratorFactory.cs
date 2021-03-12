@@ -38,6 +38,7 @@ namespace SqlGenerator
         /// Return the correct <see cref="IGenerator"/> implementation
         /// </summary>
         public IGenerator GetGenerator(IReader reader, TableDef tableDef, Action<DataSourceInformation> options = null) {
+            logger.LogInformation("Using Insert generator");
             return new InsertGenerator(reader, logger, tableDef, options);
         }
     }

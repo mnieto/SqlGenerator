@@ -67,10 +67,15 @@ namespace SqlGenerator
         /// </summary>
         /// <param name="writer"><see cref="TextWriter"/> where the SQL sentences are written</param>
         public void Generate(TextWriter writer) {
+            long i = 0;
+            DateTime start = DateTime.Now;
             while (Reader.Read()) {
                 string sql = GenerateSQL();
                 writer.WriteLine(sql);
+                i++;
             }
+            TimeSpan elapsed = DateTime.Now - start;
+            Logger.LogInformation($"{i} lines written in {elapsed.TotalSeconds:n} seconds.");
         }
 
         /// <summary>

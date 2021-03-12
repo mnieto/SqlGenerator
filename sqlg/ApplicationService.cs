@@ -34,6 +34,7 @@ namespace sqlg
             _logger.LogInformation($"TableName: {_specification.TableName}");
             _logger.LogInformation($"Source: {options.Source}");
             _logger.LogInformation($"Target: {options.Target}");
+            _logger.LogInformation($"WorksheetName: {options.WorkSheetName}");
 
             source.Load(options.Source);
 
