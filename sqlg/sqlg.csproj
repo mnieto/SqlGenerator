@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommandLineParser.Configuration\CommandLineParser.Configuration.csproj" />
     <ProjectReference Include="..\SqlGenerator\SqlGenerator.csproj" />
   </ItemGroup>
 

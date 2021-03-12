@@ -3,6 +3,7 @@ using System.IO;
 using CommandLine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using CommandLineParser.Configuration;
 using Serilog;
 using SqlGenerator;
 
@@ -29,13 +30,15 @@ namespace sqlg {
             if (configFile != null) {
                 builder.AddJsonFile(configFile);
             }
+            arguments.WithParsed(cmdOptions => {
+                builder.AddCommandLineConfiguration<CommandLineOptions, Specification>(cmdOptions);
+            });
             var config = builder.Build();
-
 
             //Dependency Injection
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
-            if (configFile != null) {
+            if (configFile != null || config.Get<Specification>() != null) {
                 services.Configure<Specification>(config.GetSection("Specification"));
             }
             services.AddSqlGenerator();
