@@ -50,7 +50,7 @@ namespace SqlGenerator.Discover
             result.Field.Name = fieldName;
 
             if (counters[FieldType.Auto] == data.Count()) {
-                result.Field.FieldType = FieldType.Auto;
+                result.Field.FieldType = FieldType.Text;    //If all values are null, select the less restrictive data type: we cannot infer the type
             } else if (counters[FieldType.Numeric] + counters[FieldType.Auto] == data.Count()) {
                 if (distinct.Count == 2) {
                     result.Field.FieldType = FieldType.Bool;
