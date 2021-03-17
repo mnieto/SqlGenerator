@@ -14,7 +14,7 @@ namespace SqlGenerator.Test
         [Fact]
         public void auto_field() {
             var fld = GetFieldDef(0);
-            Assert.Equal(FieldType.Auto, fld.FieldType);
+            Assert.Equal(FieldType.Text, fld.FieldType);
             Assert.Null(fld.Format);
         }
 
