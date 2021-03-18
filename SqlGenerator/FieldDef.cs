@@ -46,6 +46,9 @@ namespace SqlGenerator
         /// </summary>
         public string Format { get; set; }
 
+        /// <summary>
+        /// Human readable description for the field definition
+        /// </summary>
         public override string ToString() {
             var sb = new StringBuilder();
             sb.Append($"[{Name}]:{FieldType}, ");

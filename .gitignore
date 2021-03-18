@@ -362,3 +362,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 SqlGenerator/SqlGenerator.xml
+/sqlg/Properties/launchSettings.json
