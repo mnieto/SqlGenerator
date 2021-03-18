@@ -31,7 +31,11 @@ namespace sqlg {
                 builder.AddJsonFile(configFile);
             }
             arguments.WithParsed(cmdOptions => {
-                builder.AddCommandLineConfiguration<CommandLineOptions, Specification>(cmdOptions);
+                builder.AddCommandLineConfiguration<CommandLineOptions, Specification>(cmdOptions, mapper => {
+                    mapper
+                        .Map(x => x.TableName, x => x.TableName)
+                        .Map(x => x.WorkSheetName, x => x.WorkSheetName);
+                });
             });
             var config = builder.Build();
 

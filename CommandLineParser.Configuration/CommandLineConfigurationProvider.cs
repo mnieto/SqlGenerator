@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("CommandLineParser.Configuration.Test")]
+
 namespace CommandLineParser.Configuration
 {
     /// <summary>
@@ -13,16 +15,30 @@ namespace CommandLineParser.Configuration
     /// </summary>
     /// <typeparam name="TCmdOptions">A class with the binded the command line options</typeparam>
     /// <typeparam name="TConfiguration">A class with the binded configuration options</typeparam>
-    public class CommandLineConfigurationProvider<TCmdOptions, TConfiguration> : ConfigurationProvider
+    public class CommandLineConfigurationProvider<TCmdOptions, TConfiguration>
+        : ConfigurationProvider
+        where TCmdOptions : class
+        where TConfiguration : class
     {
         private readonly TCmdOptions _options;
+        private Action<CommandLineMapper<TCmdOptions, TConfiguration>> _mapperAction;
 
-        public CommandLineConfigurationProvider(TCmdOptions options) {
-            _options = options;
+        public CommandLineConfigurationProvider(TCmdOptions options) : this(options, null) { }
+
+        public CommandLineConfigurationProvider(TCmdOptions options, Action<CommandLineMapper<TCmdOptions, TConfiguration>> mapper) {
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _mapperAction = mapper;
         }
 
+
         public override void Load() {
-            BindProperties(_options);
+            if (_mapperAction == null) {
+                BindProperties(_options);
+            } else {
+                var mapper = new CommandLineMapper<TCmdOptions, TConfiguration>(_options);
+                _mapperAction(mapper);
+                BindMappedProperties(mapper);
+            }
         }
 
         public override string ToString() {
@@ -34,7 +50,7 @@ namespace CommandLineParser.Configuration
             foreach (var pi in options.GetType().GetProperties()) {
                 var cmdAttribute = pi.GetCustomAttribute<CmdLineOptionAttribute>();
                 if (cmdAttribute != null) {
-                    if (!IsDefaultValue(pi, pi.GetValue(options))) {
+                    if (!pi.IsDefaultValue(pi.GetValue(options))) {
                         string path = cmdAttribute.GetPropertyPath();
                         Set(path, pi.GetValue(options).ToString());
                     }
@@ -42,16 +58,8 @@ namespace CommandLineParser.Configuration
             }
         }
 
-        private bool IsDefaultValue(PropertyInfo pi, object value) {
-            var att = pi.GetCustomAttribute<CommandLine.OptionAttribute>();
-            if (att?.Default != null) {
-                return value.Equals(att.Default);
-            }
-            Type type = pi.PropertyType;
-            if (type.IsValueType) {
-                return Activator.CreateInstance(type).Equals(value);
-            }
-            return value == null;
+        private void BindMappedProperties(CommandLineMapper<TCmdOptions, TConfiguration> mapper) {
+            Data = mapper.GetSettings();
         }
 
     }
