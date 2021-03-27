@@ -17,7 +17,7 @@ namespace SqlGenerator.Sources
         protected DiscoverStrategy InitialDiscoverStrategy;
         protected DiscoverStrategy DiscoverStrategy;
 
-        protected Specification Options { get; set; }
+        protected Template Options { get; set; }
         protected ILogger Logger { get; set; }
 
         protected IDiscoverFieldDefFactory DiscoverFieldDefFactory { get; init; }
@@ -99,7 +99,7 @@ namespace SqlGenerator.Sources
             }
         }
 
-        public BaseSource(IOptions<Specification> options, ILogger logger, IDiscoverFieldDefFactory discoverFieldDefFactory) {
+        public BaseSource(IOptions<Template> options, ILogger logger, IDiscoverFieldDefFactory discoverFieldDefFactory) {
             Options = options?.Value ?? throw new ArgumentNullException(nameof(options));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             InitialDiscoverStrategy = Options.DiscoverStrategy;

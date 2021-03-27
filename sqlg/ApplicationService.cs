@@ -12,13 +12,13 @@ namespace sqlg
     internal class ApplicationService {
 
         private ILogger<ApplicationService> _logger;
-        private Specification _specification;
+        private Template _template;
         private IGeneratorFactory GeneratorFactory {get; set; }
         private SourceFactory SourceFactory { get; set; }
 
-        public ApplicationService(ILogger<ApplicationService> logger, IOptions<Specification> specification, IGeneratorFactory generatorFactory, SourceFactory sourceFactory) {
+        public ApplicationService(ILogger<ApplicationService> logger, IOptions<Template> template, IGeneratorFactory generatorFactory, SourceFactory sourceFactory) {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _specification = specification?.Value ?? throw new ArgumentNullException(nameof(specification));
+            _template = template?.Value ?? throw new ArgumentNullException(nameof(template));
             GeneratorFactory = generatorFactory ?? throw new ArgumentNullException(nameof(generatorFactory));
             SourceFactory = sourceFactory ?? throw new ArgumentNullException(nameof(sourceFactory));
         }
@@ -31,7 +31,7 @@ namespace sqlg
             }
             ISource source = SourceFactory.GetSource(Path.GetExtension(options.Source).Substring(1));
 
-            _logger.LogInformation($"TableName: {_specification.TableName}");
+            _logger.LogInformation($"TableName: {_template.TableName}");
             _logger.LogInformation($"Source: {options.Source}");
             _logger.LogInformation($"Target: {options.Target}");
             _logger.LogInformation($"WorksheetName: {options.WorkSheetName}");

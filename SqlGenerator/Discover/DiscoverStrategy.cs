@@ -23,10 +23,10 @@ namespace SqlGenerator.Discover
         Auto = 0,
 
         /// <summary>
-        /// Uses then <see cref="Specification.ConnectionString"/> and retrieves the table schema
+        /// Uses then <see cref="Template.ConnectionString"/> and retrieves the table schema
         /// </summary>
         /// <remarks>
-        /// If <see cref="Specification.ConnectionString"/> is empty an exception is thrown in the <see cref="ISource.Load(string)"/> method call
+        /// If <see cref="Template.ConnectionString"/> is empty an exception is thrown in the <see cref="ISource.Load(string)"/> method call
         /// </remarks>
         ConnectToDatabase = 1,
 
@@ -37,7 +37,7 @@ namespace SqlGenerator.Discover
         FieldDefDescriptor = 2,
 
         /// <summary>
-        /// Get a sample of data of max <see cref="Specification.RowsToScan"/> rows and, for each column try to guess the data type and other properties
+        /// Get a sample of data of max <see cref="Template.RowsToScan"/> rows and, for each column try to guess the data type and other properties
         /// </summary>
         GuessDataType = 3
     }

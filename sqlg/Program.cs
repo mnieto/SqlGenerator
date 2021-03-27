@@ -23,7 +23,10 @@ namespace sqlg {
                 }
             });
 
-            //Configuration
+            //Configuration, en this order
+            //1st: application settins
+            //2nd: template file
+            //3rd: command line options
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory());
             builder.AddJsonFile("settings.json");
@@ -31,7 +34,7 @@ namespace sqlg {
                 builder.AddJsonFile(configFile);
             }
             arguments.WithParsed(cmdOptions => {
-                builder.AddCommandLineConfiguration<CommandLineOptions, Specification>(cmdOptions, mapper => {
+                builder.AddCommandLineConfiguration<CommandLineOptions, Template>(cmdOptions, mapper => {
                     mapper
                         .Map(x => x.TableName, x => x.TableName)
                         .Map(x => x.WorkSheetName, x => x.WorkSheetName);
@@ -42,8 +45,8 @@ namespace sqlg {
             //Dependency Injection
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
-            if (configFile != null || config.Get<Specification>() != null) {
-                services.Configure<Specification>(config.GetSection("Specification"));
+            if (configFile != null || config.Get<Template>() != null) {
+                services.Configure<Template>(config.GetSection("Template"));
             }
             services.AddSqlGenerator();
             services.AddSingleton<ApplicationService>();

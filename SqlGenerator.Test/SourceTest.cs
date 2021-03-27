@@ -22,7 +22,7 @@ namespace SqlGenerator.Test
             discoverFactory.Setup(x => x.GetDiscoverStrategy(It.IsAny<DiscoverStrategy>()))
                 .Returns(new FieldDefParserStrategy());
 
-            var settings = Options.Create(new Specification {
+            var settings = Options.Create(new Template {
                 DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor,
                 TableName = "MyTable"
             });
@@ -36,7 +36,7 @@ namespace SqlGenerator.Test
             discoverFactory.Setup(x => x.GetDiscoverStrategy(It.IsAny<DiscoverStrategy>()))
                 .Returns(new FieldDefParserStrategy());
 
-            var settings = Options.Create(new Specification {
+            var settings = Options.Create(new Template {
                 DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor,
                 TableName = "MyTable"
             });
@@ -56,7 +56,7 @@ namespace SqlGenerator.Test
             discoverFactory.Setup(x => x.GetDiscoverStrategy(It.IsAny<DiscoverStrategy>()))
                 .Returns(new FieldDefParserStrategy());
 
-            var settings = Options.Create(new Specification {
+            var settings = Options.Create(new Template {
                 DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor,
                 TableName ="MyTable"
             });
@@ -74,7 +74,7 @@ namespace SqlGenerator.Test
             discoverFactory.Setup(x => x.GetDiscoverStrategy(It.IsAny<DiscoverStrategy>()))
                 .Returns(new FieldDefParserStrategy());
 
-            var settings = Options.Create(new Specification {
+            var settings = Options.Create(new Template {
                 DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor,
                 TableName = "MyTable"
             });
@@ -88,7 +88,7 @@ namespace SqlGenerator.Test
             discoverFactory.Setup(x => x.GetDiscoverStrategy(It.IsAny<DiscoverStrategy>()))
                 .Returns(new FieldDefParserStrategy());
 
-            var settings = Options.Create(new Specification {
+            var settings = Options.Create(new Template {
                 DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor,
                 TableName = "MyTable"
             });
@@ -104,7 +104,7 @@ namespace SqlGenerator.Test
             discoverFactory.Setup(x => x.GetDiscoverStrategy(It.IsAny<DiscoverStrategy>()))
                 .Returns(new FieldDefParserStrategy());
 
-            var settings = Options.Create(new Specification {
+            var settings = Options.Create(new Template {
                 DiscoverStrategy = DiscoverStrategy.FieldDefDescriptor,
                 TableName = "MyTable"
             });
@@ -131,10 +131,10 @@ namespace SqlGenerator.Test
     {
 
         private (List<string> Header, List<string[]> Data) sampleData;
-        public TestSource(IOptions<Specification> options,
-                                         ILogger logger,
-                                         IDiscoverFieldDefFactory discoverFactory,
-                                         (List<string> Header, List<string[]> Data) sampleData) :
+        public TestSource(IOptions<Template> options,
+                          ILogger logger,
+                          IDiscoverFieldDefFactory discoverFactory,
+                          (List<string> Header, List<string[]> Data) sampleData) :
             base(options, logger, discoverFactory) {
 
             this.sampleData = sampleData;

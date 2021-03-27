@@ -1,5 +1,5 @@
 {
-  "Specification": {
+  "Template": {
     "TableName": "Users",
     "ConnectionString": ""
   }

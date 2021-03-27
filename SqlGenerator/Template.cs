@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace SqlGenerator
 {
     /// <summary>
-    /// Indications to load data and generate the SQL scripts
+    /// Specification to load data and generate the SQL scripts
     /// </summary>
-    public class Specification {
+    public class Template {
         private int _rowsToScan = 50;
 
         /// <summary>

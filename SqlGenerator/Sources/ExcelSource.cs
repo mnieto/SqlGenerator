@@ -15,7 +15,7 @@ namespace SqlGenerator.Sources
 
         private ExcelWorksheet _ws;
 
-        public ExcelSource(IOptions<Specification> options, ILogger<ExcelSource> logger, IDiscoverFieldDefFactory discoverFieldDefFactory) 
+        public ExcelSource(IOptions<Template> options, ILogger<ExcelSource> logger, IDiscoverFieldDefFactory discoverFieldDefFactory) 
             : base(options, logger, discoverFieldDefFactory) { }
 
         public override void Load(string fileName) {
