@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using CommandLine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,8 +28,9 @@ namespace sqlg {
             //1st: application settins
             //2nd: template file
             //3rd: command line options
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory());
+                .SetBasePath(path);
             builder.AddJsonFile("settings.json");
             if (configFile != null) {
                 builder.AddJsonFile(configFile);

@@ -1,0 +1,21 @@
+{
+  "Template": {
+    "TableName": "Users",
+    "ConnectionString": "",
+    "Fields": [
+      {
+        "Name": "UserName",
+        "FieldType": "Text"
+      },
+      {
+        "Name": "Mail",
+        "FieldType": "Text"
+      },
+      {
+        "Name": "Active",
+        "FieldType": "Bool",
+        "Format": "A/I"
+      }
+    ]
+  }
+}
