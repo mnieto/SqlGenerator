@@ -30,6 +30,16 @@ namespace SqlGenerator
         /// </summary>
         public DiscoverStrategy DiscoverStrategy { get; set; } = DiscoverStrategy.Auto;
 
+
+        /// <summary>
+        /// List of field definitions
+        /// </summary>
+        /// <remarks>
+        /// <para>If not specified, fields are infered from the source file. Also, if no ordinal position specified for each 
+        /// <see cref="FieldDef"/>, fields are assigned by creation order</para>
+        /// </remarks>
+        public List<FieldDef> Fields { get; private set; } = new List<FieldDef>();
+
         /// <summary>
         /// Number of rows to scan to try to guess the fields data type
         /// </summary>

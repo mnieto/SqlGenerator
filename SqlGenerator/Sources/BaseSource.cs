@@ -231,7 +231,13 @@ namespace SqlGenerator.Sources
         protected virtual void DiscoverTableDef() {
             if (DiscoverStrategy == DiscoverStrategy.Auto) {
                 Logger.LogInformation($"Using {DiscoverStrategy.Auto} to guess fields information");
-                DiscoverStrategy = DiscoverStrategy.ConnectToDatabase;
+                if (Options.Fields.Count() == 0)
+                    DiscoverStrategy = DiscoverStrategy.ConnectToDatabase;
+                else
+                    DiscoverStrategy = DiscoverStrategy.UseTemplate;
+            }
+            if (DiscoverStrategy == DiscoverStrategy.UseTemplate) {
+                UseFieldDescriptorFromTemplate();
             }
             if (DiscoverStrategy == DiscoverStrategy.ConnectToDatabase) {
                 if (!string.IsNullOrEmpty(Options.ConnectionString))
@@ -259,13 +265,43 @@ namespace SqlGenerator.Sources
             };
         }
 
+        protected virtual void UseFieldDescriptorFromTemplate() {
+            Logger.LogInformation($"Using {DiscoverStrategy.UseTemplate} to load fields information from template");
+            BuildTableDef();
+            CurrentRow = 2; //Skip headers and point to first row data
+
+            //Assign ordinalPosition for those fields that don't have defined it
+            int p = 0;
+            Logger.LogDebug("Found {fields} field definitions:", Options.Fields.Count);
+            foreach (var field in Options.Fields) {
+                if (field.OrdinalPosition == 0)
+                    field.OrdinalPosition = p;
+                Logger.LogDebug("  " + field.ToString());
+                p++;
+            }
+            bool hasDuplicates = Options.Fields
+                .GroupBy(x => x.OrdinalPosition)
+                .Where(g => g.Count() > 1)
+                .Any();
+            if (hasDuplicates) {
+                throw new InvalidOperationException("Found duplicated OrdinalPosition for some fields");
+            }
+
+            TableDef.Fields.AddRange(Options.Fields);
+        }
+
         /// <summary>
         /// Uses database strategy to get the table's schema
         /// </summary>
         /// <param name="connectionString">connection string neccesary to connect to the database</param>
         protected virtual void UseDatabase(string connectionString) {
             Logger.LogInformation($"Using {DiscoverStrategy.ConnectToDatabase} to guess fields information");
-            throw new NotImplementedException();
+            try {
+                throw new NotImplementedException();
+            } catch (Exception ex) {
+                Errors.Add("Error loading fieldDef from template: " + ex.Message);
+                DiscoverStrategy = DiscoverStrategy.ConnectToDatabase;
+            }
         }
 
 

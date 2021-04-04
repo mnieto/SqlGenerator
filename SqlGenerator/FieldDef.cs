@@ -56,6 +56,7 @@ namespace SqlGenerator
             sb.Append($", PK={IsKey}");
             sb.Append($", MaxLength={MaxLength}");
             sb.Append($", Format={Format}");
+            sb.Append($", Position={OrdinalPosition}");
             return sb.ToString();
         }
     }

@@ -21,6 +21,11 @@ namespace SqlGenerator.Discover
         /// then it try the get only field names and guess data types
         /// </remarks>
         Auto = 0,
+        
+        /// <summary>
+        /// Use the <see cref="Template.Fields"/> collection of <see cref="FieldDef"/>
+        /// </summary>
+        UseTemplate = 1,
 
         /// <summary>
         /// Uses then <see cref="Template.ConnectionString"/> and retrieves the table schema
@@ -28,17 +33,17 @@ namespace SqlGenerator.Discover
         /// <remarks>
         /// If <see cref="Template.ConnectionString"/> is empty an exception is thrown in the <see cref="ISource.Load(string)"/> method call
         /// </remarks>
-        ConnectToDatabase = 1,
+        ConnectToDatabase = 2,
 
         /// <summary>
         /// Fields have a specific descriptor that allow to infer the neccesary information about field name, data type and properties.
         /// </summary>
         /// <seealso cref="FieldDefParserStrategy"/>
-        FieldDefDescriptor = 2,
+        FieldDefDescriptor = 3,
 
         /// <summary>
         /// Get a sample of data of max <see cref="Template.RowsToScan"/> rows and, for each column try to guess the data type and other properties
         /// </summary>
-        GuessDataType = 3
+        GuessDataType = 4
     }
 }

@@ -18,6 +18,8 @@ namespace SqlGenerator.Discover
             strategy switch {
                 DiscoverStrategy.Auto =>
                     (IFieldDefStrategy)Services.GetService(typeof(FieldDefParserStrategy)),
+                DiscoverStrategy.UseTemplate =>
+                    throw new InvalidOperationException($"{DiscoverStrategy.UseTemplate} strategy do not use discover fieldDef"),
                 DiscoverStrategy.ConnectToDatabase =>
                    throw new NotImplementedException(),
                 DiscoverStrategy.FieldDefDescriptor =>
