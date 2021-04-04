@@ -11,7 +11,7 @@ namespace sqlg
 {
     class CommandLineOptions
     {
-        [Option('s', "source", HelpText = "Imput file with data")]
+        [Option('s', "source", HelpText = "Imput file with data", Required = true)]
         public string Source { get; set; }
 
         [Option('t', "target",HelpText = "Output file with sql script")]
