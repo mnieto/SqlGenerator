@@ -3,6 +3,9 @@ Map input from Excel|text files|SQL engine and generate sql insert|update|delete
 
 Intended as command line tool and Windows application
 
+# Status
+[![.NET](https://github.com/mnieto/SqlGenerator/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/mnieto/SqlGenerator/actions/workflows/dotnet.yml)
+
 # Features
 * Infer from Excel data types and table name by convention. No need to specify target information
 * Use of extensive command-line arguments to define behaviour. Allow to generate sql in batch commands
