@@ -48,11 +48,11 @@ namespace SqlGenerator.Test
         }
 
         public static (List<string> Header, List<string[]> Data) ReadData() {
-            var header = new List<string> { "kn|nn|Id", "n|numeric", "b|bool|yes/no", "t|seemText", "d|n|MyDates" };
+            var header = new List<string> { "kn|nn|Id", "n|numeric", "b|bool|yes/no", "t|seemText", "d|n|MyDates|dd.MM.yyyy" };
             var data = new List<string[]> {
                 //            id, numeric,   bool,     text,      date
-                new string[] { "1", "8",     "yes",    null,      "24.02.70" },
-                new string[] { "2", "8.73",  "no" ,   "one text", "30/12/1966 13:20" }
+                new string[] { "1", "8",     "yes",    null,      "24.02.1970" },
+                new string[] { "2", "8.73",  "no" ,   "one text", "30.12.1966" }
             };
             return (header, data);
         }
