@@ -95,7 +95,10 @@ namespace SqlGenerator
                     return Information.NullValue;
                 switch (fld.FieldType) {
                     case FieldType.Text:
-                        return QuoteLiteral(Reader.AsString(fld.OrdinalPosition));
+                        if (fld.MaxLength == 0)
+                            return QuoteLiteral(Reader.AsString(fld.OrdinalPosition));
+                        else
+                            return QuoteLiteral(Reader.AsString(fld.OrdinalPosition), fld.MaxLength);
                     case FieldType.Bool:
                         return Reader.AsBoolean(fld.OrdinalPosition) ? Information.TrueValue : Information.FalseValue;
                     case FieldType.Numeric:
@@ -131,6 +134,19 @@ namespace SqlGenerator
         /// </summary>
         /// <param name="literal">literal value</param>
         protected string QuoteLiteral(string literal) {
+            char q = Information.StringLiteralChar;
+            return string.Concat(q, Escape(literal, q), q);
+        }
+
+
+        /// <summary>
+        /// Quote a string literal. Escapes the quote char if it is neccesary
+        /// </summary>
+        /// <param name="literal">literal value</param>
+        /// <param name="maxLength">Truncates, if neccesary up to <paramref name="maxLength"/> chars</param>
+        protected string QuoteLiteral(string literal, int maxLength) {
+            int length = Math.Min(literal.Length, maxLength);
+            literal = literal.Substring(0, length);
             char q = Information.StringLiteralChar;
             return string.Concat(q, Escape(literal, q), q);
         }

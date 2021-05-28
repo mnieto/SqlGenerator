@@ -286,6 +286,11 @@ namespace SqlGenerator.Sources
             if (hasDuplicates) {
                 throw new InvalidOperationException("Found duplicated OrdinalPosition for some fields");
             }
+            bool hasAutoDataType = Options.Fields
+                .Any(x => x.FieldType == FieldType.Auto);
+            if (hasAutoDataType) {
+                throw new InvalidOperationException("All fields in the template must have a FieldType. Auto is not allowed from a template file.");
+            }
 
             TableDef.Fields.AddRange(Options.Fields);
         }

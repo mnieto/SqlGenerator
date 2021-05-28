@@ -195,6 +195,48 @@ namespace SqlGenerator.Test
 
         }
 
+        [Fact]
+        public void long_text_is_truncated_at_maxLenght_position() {
+            var sw = new System.IO.StringWriter();
+
+            var source = new Mock<IReader>();
+            source.SetupSequence(x => x.Read())                     //Will return 1 record
+                .Returns(true)
+                .Returns(true)
+                .Returns(false);
+            source.SetupSequence(x => x.AsNumber(0))                       
+                .Returns(1)
+                .Returns(2);
+            source.SetupSequence(x => x.AsString(1))
+                .Returns("0123456789")
+                .Returns("012");
+
+
+            var tbDef = new TableDef {
+                TableName = "TestTable"
+            };
+            tbDef.Fields.AddRange(new List<FieldDef> {              //Al fiellds defined as nullable for this test
+                new FieldDef {
+                    Name = "Id",
+                    FieldType = FieldType.Numeric,
+                    OrdinalPosition = 0
+                },
+                new FieldDef {
+                    Name = "Name",
+                    FieldType = FieldType.Text,
+                    MaxLength = 5,
+                    OrdinalPosition = 1
+                }
+            });
+
+            var sut = new InsertGenerator(source.Object, NullLogger<InsertGenerator>.Instance, tbDef);
+            sut.Generate(sw);
+            string[] lines = sw.ToString().Split(sw.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            Assert.Collection(lines,
+                x => Assert.Equal("INSERT INTO [TestTable] ([Id], [Name]) VALUES (1, '01234');", x),
+                x => Assert.Equal("INSERT INTO [TestTable] ([Id], [Name]) VALUES (2, '012');", x));
+        }
+
     }
 }
 
