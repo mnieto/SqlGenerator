@@ -25,5 +25,8 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Integration tests
       shell: pwsh
-      run: '& $env:GITHUB_WORKSPACE/IntegrationTests/runtests.ps1'
+      run: |
+        Set-PSRepository PSGallery -InstallationPolicy Trusted
+        Install-Module ImportExcel
+        '& $env:GITHUB_WORKSPACE/IntegrationTests/runtests.ps1'
       
