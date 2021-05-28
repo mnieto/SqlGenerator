@@ -1,0 +1,30 @@
+{
+    "Template": {
+      "Fields": [
+        {
+            "Name": "Id",
+            "FieldType": "Numeric"
+        },
+        {
+            "Name": "Name",
+            "FieldType": "Text"
+        },
+        {
+            "Name": "Address",
+            "FieldType": "Text",
+            "MaxLength": 50
+        },        
+        {
+            "Name": "CreationDate",
+            "FieldType": "DateTime",
+            "IsNullable": "False"
+        },
+        {
+            "Name": "ModificationDate",
+            "FieldType": "DateTime",
+            "IsNullable": "True"
+        }
+      ]
+    }
+  }
+  
